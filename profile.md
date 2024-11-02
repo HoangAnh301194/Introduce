@@ -16,9 +16,7 @@
 - Một số nội dung đã và có thể làm :
   - có thể điều khiển các tác vụ tương tự như đã làm với Arduino
 # C. Công việc tiếp theo
-### Học tập tại CLB và LAB
-- Tìm hiểu sâu hơn về arduino
-- Em đang học ESP32 cùng các bạn ở Câu lạc bộ Điện Tử, làm bài tập về ESP32 và báo cáo tiến độ mỗi buổi học
+- Tìm hiểu sâu hơn về arduino, esp
 - Đang tìm hiểu thêm về các giao thức và cách điều khiển ESP qua wifi cục bộ
 # D. Đồ dùng mượn của Lab 
 - không
