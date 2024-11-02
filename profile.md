@@ -1,6 +1,6 @@
 # A. Giới thiệu
 ### Thông tin cá nhân
-- Em là Nguyễn Hữu Hoàng Anh, sinh viên năm 2 ngành kỹ thuật điều khiển và tự động hóa, chuyên ngành đã chọn là Robot và Trí tuệ nhân tạo,
+- Em là **Nguyễn Hữu Hoàng Anh**, sinh viên năm 2 ngành kỹ thuật điều khiển và tự động hóa, chuyên ngành đã chọn là Robot và Trí tuệ nhân tạo,
 - Em là thành viên mới vào Lab ạ
 - Trước đây đã từ tiếp xúc và làm quen với vi điều khiển Arduino Uno, hiện tại em đang theo học tại Câu lạc bộ Điện Tử và đang học về ESP32 ạ
 # B. Nội dung đã tìm hiểu và đã làm 
