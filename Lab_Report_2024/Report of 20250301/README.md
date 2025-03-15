@@ -11,8 +11,8 @@
 - **Nguyên lý hoạt động của code** 
   - Sơ đồ nguyên lý :
     ![lưu đồ thuật toán ](luudothuattoan.jpg)
-- **lưu ý lỗi *sketch too big***
-  khi bị thông báo lỗi *sketch too big* thì cần vào tool --> partition scheme --> đổi sang: Huge App (3MB no OTA / 1MB SPIFFS)
+- **Lưu ý lỗi *sketch too big***
+  Khi bị thông báo lỗi *sketch too big* thì cần vào tool --> partition scheme --> đổi sang: Huge App (3MB no OTA / 1MB SPIFFS)
 
 
 ### 3) Nguyên lý Web_BLEWifi và ESP 
@@ -54,7 +54,7 @@ Ngoài việc sử dụng thẻ lệnh HTML để tạo giao diện người dù
             .catch(error => log("BLE Error: " + error));
         }
   ```
-  giao diện quét các thiết bị như sau 
+  Giao diện quét các thiết bị như sau 
   ![alt text](image-5.png)
 - **Hàm config và gửi dữ liệu WIFI từ ô nhập liệu**
   ```cpp
@@ -76,7 +76,7 @@ Ngoài việc sử dụng thẻ lệnh HTML để tạo giao diện người dù
             }
         }
   ```
-  sau khi nhập liệu và gửi thì sẽ có thôgn báo trên terminal web như sau : 
+  Sau khi nhập liệu và gửi thì sẽ có thôgn báo trên terminal web như sau : 
   ![alt text](image.png)
 - Đối với ESP , sẽ có các hàm tiếp nhận thông tin, kết nối wifi thông qua thông tin nhận được từ Web
   - *Đăng kí dịch vụ và đặc tính BLE*
@@ -162,11 +162,11 @@ Ngoài việc sử dụng thẻ lệnh HTML để tạo giao diện người dù
       }
     };
 ```
-khi có tin nhắn gửi đến esp , nếu định dạng đúng là bản tin gửi lên broker thì ESP sẽ xử lí dữ liệu và in lên broker như sau :
+Khi có tin nhắn gửi đến esp , nếu định dạng đúng là bản tin gửi lên broker thì ESP sẽ xử lí dữ liệu và in lên broker như sau :
 
 ![alt text](image-1.png)
 
-và bên trong broker sẽ có tin nhắn vừa publish:
+Và bên trong broker sẽ có tin nhắn vừa publish:
 
 ![alt text](image-2.png)
 
@@ -175,18 +175,20 @@ và bên trong broker sẽ có tin nhắn vừa publish:
     - Web BLE Client kết nối tới ESP32 thông qua hàm ```requestBluetoothDevice()```  
     - Web gửi thông tin WiFi và MQTT (SSID, password, topic) qua BLE bằng hàm ``` connectWifi``` 
     - ESP32 nhận thông tin này và kết nối WiFi bằng hàm onWrite để nhận receivedData và dùng hàm ```receieData()``` để tách lấy ssid và password , sau đó dùng thông tin này để kết nối wifi bằng hàm ```Wifi.begin(ssid,pass);```
-    - sau khi nhận thông tin thì wifi sẽ được kết nối và in thông tin ra màn hình Serial 
+    - Sau khi nhận thông tin thì wifi sẽ được kết nối và in thông tin ra màn hình Serial 
   ![alt text](image-3.png)
   sau khi kết nối wifi, esp sẽ kết nối với MQTT Broker và gửi tin nhắn từ 1 đến 100 với topic No. 
   ![alt text](image-4.png)
 
 ### 4) **Thêm chức năng xem và publish từ web lên mqtt thông qua esp**
-- **Gửi tin nhắn lên MQTT broker**
-- Sửa trong code hoạt động của Web 
-    - đăng kí thêm đặc tính gửi dữ liệu bản tin publish lên MQTT Broker 
+- **Về phía Web BLE**
+  - Sửa trong code hoạt động của Web 
+    - Đăng kí thêm đặc tính gửi dữ liệu bản tin publish lên MQTT Broker 
 ```cpp
   var messageCharacteristicUUID = "6e400002-b5a3-f393-e0a9-e50e24dcca9e"; // MQTT message 
 ```  
+   - Thêm 2 ô nhập liệu để publish tin nhắn tới MQTT Broker 
+  ![alt text](image-6.png)
    - Thêm hàm publish để gửi dữ liệu tới ESP và publish lên Broker 
 ```cpp
         function publishMessage() {
@@ -209,14 +211,37 @@ và bên trong broker sẽ có tin nhắn vừa publish:
         }
     
 ```
-  - mỗi khi web gửi dữ liệu đến esp thì hàm onWrite sẽ đọc , nếu địng dạng dữ liệu là kiểu MQTT:topic;message thì sẽ được hiểu là dữ liệu publish và esp sẽ tách lấy topic và message để publish lên Broker. 
-  - code sau khi sửa lại để có thể publish tin nhắn lên Broker
+- **Phía ESP**
+- Sửa hàm onWrite để có thể phân tích dữ liệu MQTT được Web gửi tới:
+  - Thêm đoạn phân tích và tách nếu dữ liệu nhận được đúng định dạng bản tin MQTT.
+  ```cpp
+  // Phân tách dữ liệu nhận được
+        String receivedData = String(rxValue.c_str());
+        receivedData.trim();
+        size_t delimiterPos = receivedData.indexOf(':');
+
+        if (delimiterPos != -1) {
+          String check = receivedData.substring(0, delimiterPos);
+
+          if (check == "MQTT") { // Nếu dữ liệu là MQTT
+            String mqttData = receivedData.substring(delimiterPos + 1);
+            size_t delimiterPos2 = mqttData.indexOf(';');
+            if (delimiterPos2 != -1) {
+              topic = mqttData.substring(0, delimiterPos2);
+              message = mqttData.substring(delimiterPos2 + 1);
+            } else {
+              topic = mqttData;
+              message = "";
+            }
+  ```
+  - Mỗi khi web gửi dữ liệu đến esp thì hàm onWrite sẽ đọc , nếu địng dạng dữ liệu là kiểu MQTT:topic;message thì sẽ được hiểu là dữ liệu publish và esp sẽ tách lấy topic và message để publish lên Broker. 
+  - Code sau khi sửa lại để có thể publish tin nhắn lên Broker
     - [code](https://github.com/ptitopen-git/D23_NguyenHuuHoangAnh/blob/main/Lab_Report_2024/Report%20of%2020250301/ESP32_BLE_MQTT/ESP32_BLE_MQTT.ino)
   
   
   
 ### 5) Video demo 
-- **link video** 
+- **Link video** 
    [video demo](https://youtu.be/o9ese3CqDt4)
 
 ## B) Công việc tiếp theo
